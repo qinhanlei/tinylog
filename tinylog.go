@@ -29,14 +29,9 @@ const (
 	COLOR_DEFAULT = "\x1b[m"
 )
 
+func fc(c int) string { return fmt.Sprintf(COLOR_FORMAT, c) } // format color
 var _lvtag = [...]string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
-var _lvcolor = [...]string{
-	COLOR_DEFAULT,
-	fmt.Sprintf(COLOR_FORMAT, GREEN),
-	fmt.Sprintf(COLOR_FORMAT, YELLOW),
-	fmt.Sprintf(COLOR_FORMAT, RED),
-	fmt.Sprintf(COLOR_FORMAT, PURPLE),
-}
+var _lvcolor = [...]string{COLOR_DEFAULT, fc(GREEN), fc(YELLOW), fc(RED), fc(PURPLE)}
 
 var _proc string
 var _file *os.File
@@ -71,8 +66,9 @@ func logit(lv int, format interface{}, v ...interface{}) {
 
 func Init(logdir string) {
 	if _file == nil {
+		var e error
 		out := fmt.Sprintf("%s/%s_%s.log", logdir, _proc, time.Now().Format("20060102_150405"))
-		_file, e := os.OpenFile(out, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
+		_file, e = os.OpenFile(out, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
 		if e != nil {
 			panic(fmt.Sprintf("can't open log file:%v error:%v", out, e))
 		}
@@ -88,7 +84,4 @@ func Debug(format interface{}, v ...interface{}) { logit(DEBUG, format, v...) }
 func Info(format interface{}, v ...interface{})  { logit(INFO, format, v...) }
 func Warn(format interface{}, v ...interface{})  { logit(WARN, format, v...) }
 func Error(format interface{}, v ...interface{}) { logit(ERROR, format, v...) }
-func Fatal(format interface{}, v ...interface{}) {
-	logit(FATAL, format, v...)
-	os.Exit(-1)
-}
+func Fatal(format interface{}, v ...interface{}) { logit(FATAL, format, v...); os.Exit(-1) }
