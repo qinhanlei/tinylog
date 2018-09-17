@@ -1,14 +1,9 @@
 # tinylog
-simple and stupid logger
 
 
 ## Usage
-`got get github.com/qinhanlei/tinylog`
+Get `go get github.com/qinhanlei/tinylog`
 
-Colored for linux/macOS only now
-
-
-## Example
 ```golang
 package main
 
