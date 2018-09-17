@@ -1,8 +1,7 @@
-# tinylog
-
+Tiny simple naive
 
 ## Usage
-Get `go get github.com/qinhanlei/tinylog`
+`go get github.com/qinhanlei/tinylog`
 
 ```golang
 package main
@@ -17,7 +16,3 @@ func main() {
 	log.Error("Hello Error")
 }
 ```
-
-
-## Todo
-rolling log file
