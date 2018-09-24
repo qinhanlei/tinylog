@@ -30,7 +30,7 @@ const (
 )
 
 func fc(c int) string { return fmt.Sprintf(COLOR_FORMAT, c) } // format color
-var _lvtag = [...]string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
+var _lvtag = [...]string{"DEBUG", "INFO ", "WARN ", "ERROR", "FATAL"}
 var _lvcolor = [...]string{COLOR_DEFAULT, fc(GREEN), fc(YELLOW), fc(RED), fc(PURPLE)}
 
 var _proc string
@@ -52,13 +52,13 @@ func logit(lv int, format interface{}, v ...interface{}) {
 	if _file != nil && lv >= _loglv {
 		tag := "[" + _lvtag[lv] + "] " + _proc + " "
 		_logger.SetPrefix(tag)
-		_stdlog.SetPrefix(_lvcolor[lv] + tag)
+		_stdlog.SetPrefix(_lvcolor[lv] + tag + _lvcolor[0])
 		switch format := format.(type) {
 		case string:
-			_stdlog.Output(3, fmt.Sprintf(format, v...)+_lvcolor[0])
+			_stdlog.Output(3, fmt.Sprintf(format, v...))
 			_logger.Output(3, fmt.Sprintf(format, v...))
 		default:
-			_stdlog.Output(3, fmt.Sprintf("%v", format)+_lvcolor[0])
+			_stdlog.Output(3, fmt.Sprintf("%v", format))
 			_logger.Output(3, fmt.Sprintf("%v", format))
 		}
 	}
