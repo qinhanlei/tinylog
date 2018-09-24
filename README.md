@@ -1,16 +1,25 @@
 Tiny simple naive
 
+## API
+```golang
+func Init(logdir string) {} // *.log files DIR path required
+func SetLv(lv int)       {} // lv in (DEBUG = iota, INFO, WARN, ERROR, FATAL)
+func SetFlag(flag int)   {} // see standard pkg log.LstdFlags
+func Close()             {}
+// utils
+func Debug(format interface{}, v ...interface{}) {}
+func Info(format interface{}, v ...interface{})  {}
+func Warn(format interface{}, v ...interface{})  {}
+func Error(format interface{}, v ...interface{}) {}
+func Fatal(format interface{}, v ...interface{}) {}
+```
+
 ## Usage
 `go get github.com/qinhanlei/tinylog`
-
-#### example
-
 ```golang
 package main
 
-import (
-	log "github.com/qinhanlei/tinylog"
-)
+import log "github.com/qinhanlei/tinylog"
 
 func init() { log.Init(".") }
 
@@ -22,7 +31,4 @@ func main() {
 	log.Fatal("Hello Fatal")
 }
 ```
-
-#### output
-<!-- ![](https://raw.githubusercontent.com/qinhanlei/tinylog/master/test.png) -->
 <div align="left"><img width="500" height="90" src="https://raw.githubusercontent.com/qinhanlei/tinylog/master/test.png"/></div>
