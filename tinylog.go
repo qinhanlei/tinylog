@@ -16,22 +16,12 @@ const (
 	ERROR
 	FATAL
 )
-const (
-	BLACK         = 30
-	RED           = 31
-	GREEN         = 32
-	YELLOW        = 33
-	BLUE          = 34
-	PURPLE        = 35
-	CYAN          = 36
-	GRAY          = 37
-	COLOR_FORMAT  = "\x1b[%dm"
-	COLOR_DEFAULT = "\x1b[m"
-)
 
-func fc(c int) string { return fmt.Sprintf(COLOR_FORMAT, c) } // format color
+// http://man7.org/linux/man-pages/man5/terminal-colors.d.5.html
+func fc(c int) string { return fmt.Sprintf("\x1b[%dm", c) }
+
 var _lvtag = [...]string{"DEBUG", "INFO ", "WARN ", "ERROR", "FATAL"}
-var _lvcolor = [...]string{COLOR_DEFAULT, fc(GREEN), fc(YELLOW), fc(RED), fc(PURPLE)}
+var _lvcolor = [...]string{"\x1b[m", fc(32), fc(33), fc(31), fc(35)}
 
 var _proc string
 var _file *os.File
