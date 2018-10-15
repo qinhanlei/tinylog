@@ -32,4 +32,4 @@ func main() {
 	log.Fatal("Hello Fatal")
 }
 ```
-<div align="left"><img width="500" height="90" src="https://raw.githubusercontent.com/qinhanlei/tinylog/master/test.png"/></div>
+<div align="left"><img width="500" height="90" src="https://raw.githubusercontent.com/qinhanlei/tinylog/master/output.png"/></div>
