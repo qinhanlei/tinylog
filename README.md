@@ -1,4 +1,5 @@
-Tiny simple naive [![Build Status](https://travis-ci.org/qinhanlei/tinylog.svg?branch=master)](https://travis-ci.org/qinhanlei/tinylog)
+# tinylog [![Build Status](https://travis-ci.org/qinhanlei/tinylog.svg?branch=master)](https://travis-ci.org/qinhanlei/tinylog)
+Tiny simple naive 
 
 ## API
 ```golang
