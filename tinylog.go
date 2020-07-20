@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const MAX_FILE_LOG_LINE = 100000 // maximum log lines in one file
+
 const (
 	DEBUG = iota
 	INFO
@@ -18,14 +20,32 @@ const (
 )
 
 // http://man7.org/linux/man-pages/man5/terminal-colors.d.5.html
-func fc(c int) string { return fmt.Sprintf("\x1b[%dm", c) }
+const (
+	BLACK         = 30
+	RED           = 31
+	GREEN         = 32
+	YELLOW        = 33
+	BLUE          = 34
+	PURPLE        = 35
+	CYAN          = 36
+	GRAY          = 37
+	COLOR_FORMAT  = "\x1b[%dm"
+	COLOR_DEFAULT = "\x1b[m"
+)
 
-var _lvtag = [...]string{"DEBUG", "INFO ", "WARN ", "ERROR", "FATAL"}
-var _lvcolor = [...]string{"\x1b[m", fc(32), fc(33), fc(31), fc(35)}
+func fc(c int) string { return fmt.Sprintf(COLOR_FORMAT, c) } // format color
+var _lvtag = [...]string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"}
+var _lvcolor = [...]string{COLOR_DEFAULT, fc(GREEN), fc(YELLOW), fc(RED), fc(PURPLE)}
 
 var _proc string
+
+var _fidx int // log file index
 var _file *os.File
+var _flcnt int // log file line count
+
+var _logdir string = "./logs" // the directory of log files, no slash at last
 var _loglv = DEBUG
+
 var _logger *log.Logger
 var _logflag = log.Ldate | log.Ltime | log.Lshortfile
 var _stdlog *log.Logger
@@ -38,33 +58,52 @@ func init() {
 	}
 }
 
+func logfname() string {
+	return fmt.Sprintf("%s/%s_%s_%02d.log", _logdir, _proc, time.Now().Format("20060102_150405"), _fidx)
+}
+
 func logit(lv int, format interface{}, v ...interface{}) {
-	if _file != nil && lv >= _loglv {
-		tag := "[" + _lvtag[lv] + "] " + _proc + " "
-		_logger.SetPrefix(tag)
-		_stdlog.SetPrefix(_lvcolor[lv] + tag + _lvcolor[0])
-		switch format := format.(type) {
-		case string:
-			_stdlog.Output(3, fmt.Sprintf(format, v...))
-			_logger.Output(3, fmt.Sprintf(format, v...))
-		default:
-			_stdlog.Output(3, fmt.Sprintf("%v", format))
-			_logger.Output(3, fmt.Sprintf("%v", format))
+	if lv < _loglv {
+		return
+	}
+	if _file == nil {
+		out := fmt.Sprintf("%s/%s_%s_%02d.log", _logdir, _proc, time.Now().Format("20060102_150405"), _fidx)
+		if f, e := os.OpenFile(out, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660); e != nil {
+			fmt.Printf("can't open log file:%v error:%v", out, e)
+		} else {
+			_file = f
+			_logger = log.New(_file, "", _logflag)
+			_stdlog = log.New(os.Stdout, "", _logflag)
 		}
+	}
+	tag := "[" + _lvtag[lv] + "] " + _proc + " "
+	_logger.SetPrefix(tag)
+	_stdlog.SetPrefix(_lvcolor[lv] + tag)
+	switch format := format.(type) {
+	case string:
+		_stdlog.Output(3, fmt.Sprintf(format, v...)+_lvcolor[0])
+		_logger.Output(3, fmt.Sprintf(format, v...))
+	default:
+		_stdlog.Output(3, fmt.Sprintf("%v", format)+_lvcolor[0])
+		_logger.Output(3, fmt.Sprintf("%v", format))
+	}
+	_flcnt++
+	if _flcnt >= MAX_FILE_LOG_LINE {
+		_fidx++
+		_flcnt = 0
+		Close()
 	}
 }
 
-func Init(logdir string) {
-	if _file == nil {
-		var e error
-		out := fmt.Sprintf("%s/%s_%s.log", logdir, _proc, time.Now().Format("20060102_150405"))
-		_file, e = os.OpenFile(out, os.O_WRONLY|os.O_APPEND|os.O_CREATE, 0660)
-		if e != nil {
-			panic(fmt.Sprintf("can't open log file:%v error:%v", out, e))
-		}
-		_logger = log.New(_file, "", _logflag)
-		_stdlog = log.New(os.Stdout, "", _logflag)
+func SetDir(logdir string) {
+	s, err := os.Stat(logdir)
+	if err != nil {
+		panic(fmt.Sprintf("get dir:[%v] stat error:%v", logdir, err))
 	}
+	if !s.IsDir() {
+		panic(fmt.Sprintf("get [%v] is not dir!", logdir))
+	}
+	_logdir = logdir
 }
 func SetLv(lv int)     { _loglv = lv }
 func SetFlag(flag int) { _logflag = flag }
