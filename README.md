@@ -16,13 +16,13 @@ func Fatal(format interface{}, v ...interface{}) {}
 ```
 
 ## Usage
-`go get github.com/qinhanlei/tinylog`
+`go get -u github.com/qinhanlei/tinylog`
 ```golang
 package main
 
 import log "github.com/qinhanlei/tinylog"
 
-func init() { log.Init(".") }
+func init() { log.SetDir(".") }
 
 func main() {
 	log.Debug("Hello Debug")

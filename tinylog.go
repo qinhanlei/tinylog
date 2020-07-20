@@ -43,7 +43,7 @@ var _fidx int // log file index
 var _file *os.File
 var _flcnt int // log file line count
 
-var _logdir string = "./logs" // the directory of log files, no slash at last
+var _logdir string = "." // the directory of log files, no slash at last
 var _loglv = DEBUG
 
 var _logger *log.Logger
