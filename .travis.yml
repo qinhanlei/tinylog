@@ -1,0 +1,6 @@
+language: golang
+
+go:
+- 1.x
+
+script: go get -u github.com/qinhanlei/tinylog && go install github.com/qinhanlei/tinylog
